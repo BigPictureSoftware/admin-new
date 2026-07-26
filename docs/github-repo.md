@@ -1,12 +1,12 @@
 # GitHub Repository
 
-Last updated: July 17, 2026
+Last updated: July 25, 2026
 
 ## Remote
 
-- **URL:** https://github.com/davidebigpicture/admin-new
+- **URL:** https://github.com/bigpicturesoftware/admin-new
 - **Default branch:** `main`
-- **Account:** `davidebigpicture`
+- **Organization:** `bigpicturesoftware`
 
 ## Local working copy (git)
 
@@ -20,7 +20,7 @@ Clone or pull here, commit, and push. Sync changed files to the IIS mapped drive
 for deployment.
 
 ```bash
-git clone https://github.com/davidebigpicture/admin-new.git E:/web/repos/admin-new
+git clone https://github.com/bigpicturesoftware/admin-new.git E:/web/repos/admin-new
 ```
 
 ## What is versioned

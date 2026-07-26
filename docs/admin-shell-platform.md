@@ -79,7 +79,7 @@ Legacy and pilot cookies use **different `Path` values**. The browser only sends
 ### Git (always commit here)
 
 ```text
-E:\web\repos\admin-new    ← https://github.com/davidebigpicture/admin-new
+E:\web\repos\admin-new    ← https://github.com/bigpicturesoftware/admin-new
 ```
 
 Never use a mapped drive as the git root. See [`.cursor/skills/commit-mapped-drive/SKILL.md`](../.cursor/skills/commit-mapped-drive/SKILL.md).
