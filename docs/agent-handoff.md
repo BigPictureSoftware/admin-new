@@ -1,25 +1,46 @@
-# Admin Shell Pilot: Agent Handoff
+# Managed Admin Shell: Agent Handoff
 
-Last updated: July 18, 2026
+Last updated: July 25, 2026
 
 This file is the operational handoff for the next agent. Read
 [`admin-shell-platform.md`](admin-shell-platform.md) first, then this file with
 [`managed-admin-shell-plan.md`](managed-admin-shell-plan.md),
-[`shell-unification-plan.md`](shell-unification-plan.md), and
-[`github-repo.md`](github-repo.md) before changing the pilot.
+[`shell-unification-plan.md`](shell-unification-plan.md),
+[`security-quality-review-2026-07.md`](security-quality-review-2026-07.md),
+[`legacy-auth-bridge-hardening-plan.md`](legacy-auth-bridge-hardening-plan.md),
+[`classic-asp-migration-guide.md`](classic-asp-migration-guide.md),
+[`perl-eradication-plan.md`](perl-eradication-plan.md),
+and [`github-repo.md`](github-repo.md) before changing the managed shell.
+
+## Program transition (July 25, 2026)
+
+The WVBPS pilot succeeded as a proving environment. The project is no longer in
+stealth mode and further work will move into a global managed-admin folder.
+The exact target physical path, URL root, and IIS application boundary have not
+yet been selected in this repository.
+
+Until that decision is recorded:
+
+- treat WVBPS paths and remote verification notes below as historical/current
+  deployment evidence, not the future source location;
+- keep `E:\web\repos\admin-new` as the only editable source of truth;
+- keep the existing `GLOBAL_6-next/admin` legacy tree read-only;
+- do not deploy new work to an inferred global path;
+- externalize WVBPS host, DSN, organization, banner, and route values;
+- add no new Perl;
+- if a Classic ASP tool needs substantial changes, rebuild it in .NET;
+- rewrite ASP-called Perl business functionality directly in .NET, using a
+  temporary compatibility endpoint only while the ASP caller remains.
 
 ## Non-negotiable boundaries
 
 - Treat `A:\GLOBAL_6-next\admin` as read-only source material. Never edit it.
-- Make client-local Classic ASP changes only under
-  `A:\wvbps\www\html\dev\adminshell`.
-- Put shared admin-shell VB.NET source under
-  `A:\wvbps\www\html\App_Code\AdminShell` and Code Admin-specific source under
-  `A:\wvbps\www\html\App_Code\AdminShell\CodeAdmin`. Application-root
-  `App_Code` is the special compilation root; under the current default
-  configuration, ordinary same-language nested folders participate in the
-  generated `App_Code` assembly. Explicit `codeSubDirectories` entries create
-  separate compilation units. Do not create `managed\App_Code`.
+- Do not make new WVBPS deployment edits unless explicitly requested for
+  verification or maintenance of the proving deployment.
+- The current WVBPS deployment puts shared source under application-root
+  `App_Code\AdminShell`. The future global managed application may retain that
+  Web Site model or adopt compiled projects; decide and document it before
+  relocating files. Do not assume a nested `managed\App_Code` will compile.
 - This development machine is a workstation with mapped drives to the web
   server. It is not the IIS host. Do not treat local commands, local process
   state, or local port checks as evidence about the deployed application.
@@ -27,14 +48,15 @@ This file is the operational handoff for the next agent. Read
   URL or on the actual IIS server by the user.
 - Do not add application-level ASP.NET sections to
   `adminshell\managed\web.config`. That folder is not an IIS application root.
-- Keep global admin assets and endpoints on `/admin/admin/...`, including
-  stylesheets, JavaScript, includes, Ajax handlers, and canonical ACL paths.
+- Preserve `/admin/admin/...` external routes and canonical ACL identities
+  during contract-parity migrations unless an approved cutover changes them.
 - Prefer semantic HTML5 and plain JavaScript backed by narrow VB.NET JSON APIs.
   Do not reintroduce Web Forms, server controls, postbacks, view state, or
   master pages.
-- Preserve copied tool business logic unless the user separately requests a
-  tool change. Migration changes should be limited to shell includes, title,
-  required global include paths, and route/ACL registration.
+- Preserve copied ASP business logic only for compatibility onboarding. If the
+  work changes business rules, DB calls, APIs, security, external services, or
+  functional Perl dependencies, follow the .NET rebuild path in
+  [`classic-asp-migration-guide.md`](classic-asp-migration-guide.md).
 
 ## Code Admin (.NET rewrite)
 
@@ -199,12 +221,12 @@ Configured tools:
 - `/dev/adminshell/loginlog.asp`
 - `/dev/adminshell/sql_logs.asp`
 - `/dev/adminshell/sms_logs.asp`
-- `/dev/adminshell/managed/access-manager/index.html` (Unified Access Manager SPA)
+- `/dev/adminshell/managed/access-manager/index.aspx` (Unified Access Manager SPA)
 - `/dev/adminshell/managed/code-admin/index.aspx` (.NET Code Admin SPA)
 
 Access Manager entry:
 
-`https://dev.services.wvbps.wv.gov/dev/adminshell/managed/access-manager/index.html`
+`https://dev.services.wvbps.wv.gov/dev/adminshell/managed/access-manager/index.aspx`
 
 **VB.NET:** `App_Code/AdminShell/AccessManager/` contains exactly seven
 tool-specific files: `AccessManagerContracts.vb`, `AccessManagerSecurity.vb`,
@@ -355,6 +377,19 @@ prevents a copied URL from bypassing the existing authorization model.
 
 ## Known constraints and inherited risks
 
+- **The legacy credential cookie is still trusted as authentication.** A valid
+  `username` ciphertext plus `authenticated=true` mints a pilot session with no
+  password, no Redis check, and no way to revoke it. Cookie `Path=/admin` does
+  not contain this; the handler reads the cookie from any URL. Remediation plan:
+  [`legacy-auth-bridge-hardening-plan.md`](legacy-auth-bridge-hardening-plan.md).
+  Related in the same plan: `sessionIDadmin` fixation, `Refresh` echoing the
+  request's own `username` cookie, and the reversibly encrypted `password`
+  cookie.
+- `includes/ssi.inc` disables all TLS certificate validation on the server-side
+  `authorize.ashx` call whose `OK|username` response sets `Session("LoginName")`.
+- `global-bridge/pilot-bridge.asp` redirects to an unvalidated `returnUrl`.
+- The `login.ashx` failed-attempt throttle counts against the ASP.NET session, so
+  a client that drops the session cookie is not throttled.
 - `loginlog.asp`, `sql_logs.asp`, and `sms_logs.asp` intentionally retain
   their original business logic. Any legacy SQL concatenation, file parameter
   handling, remote service dependency, or output encoding behavior remains
@@ -410,9 +445,10 @@ prevents a copied URL from bypassing the existing authorization model.
 
 ## Rollback
 
-The pilot is unlinked from the existing admin experience. To roll back a
-single copied tool, remove its `PilotRoutes` entry and its client-local ASP
-copy. To roll back only Access Manager, remove the Access Manager route from
+The historical WVBPS deployment remains isolated from the existing admin
+experience. To roll back a single copied tool there, remove its `PilotRoutes`
+entry and its client-local ASP copy. To roll back only Access Manager, remove
+the Access Manager route from
 `PilotRoutes` and delete `managed\access-manager` while keeping Perl tools at
 `/admin/admin/cgi-bin/...`. To roll back only Code Admin, remove its
 `PilotRoutes` entry and delete `managed\code-admin` plus `CodeAdmin*.vb` from

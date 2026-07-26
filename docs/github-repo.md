@@ -27,8 +27,8 @@ git clone https://github.com/bigpicturesoftware/admin-new.git E:/web/repos/admin
 
 The repository contains:
 
-1. **Pilot tree** — Classic ASP tools, managed endpoints, Access Manager SPA,
-   shared shell assets, tests, and docs (synced to each client's IIS path).
+1. **Managed admin tree** — compatibility Classic ASP tools, managed endpoints,
+   Access Manager, Code Admin, shared shell assets, tests, and docs.
 2. **`App_Code/AdminShell/`** — shared admin-shell VB.NET classes, with
    Code Admin-specific classes in `App_Code/AdminShell/CodeAdmin/`. On IIS these
    deploy under application-root `App_Code\AdminShell`. Application-root
@@ -41,16 +41,18 @@ The repository contains:
    these deploy to the application-root `App_Code\` folder beside any existing
    site services such as `FormSessionService.vb`.
 
-## Live vs repo layout
+## Deployment transition
 
-| Environment | Pilot files | VB.NET classes |
-|-------------|-------------|----------------|
-| **IIS (live)** | `www/html/dev/adminshell/` | `www/html/App_Code/AdminShell/` (with Code Admin in `CodeAdmin/`) plus `www/html/App_Code/RedisService.vb` and `RedisSession.vb` |
-| **Git repo** | repo root | `App_Code/AdminShell/` (with Code Admin in `CodeAdmin/`) plus `App_Code/RedisService.vb` and `RedisSession.vb` |
+| Environment | Managed files | VB.NET classes |
+|-------------|---------------|----------------|
+| **Historical/current WVBPS proving deployment** | `www/html/dev/adminshell/` | `www/html/App_Code/AdminShell/` plus Redis helpers |
+| **Future global managed deployment** | **TBD — select explicitly; do not use the existing legacy tree by inference** | **TBD — decide Web Site `App_Code` versus compiled projects** |
+| **Git repo** | repo root | `App_Code/AdminShell/` plus `App_Code/RedisService.vb` and `RedisSession.vb` |
 
-**Workflow:** edit and validate in `E:\web\repos\admin-new` → back up and
-copy/sync the coordinated change to mapped deployment paths → verify hashes and
-remote IIS behavior → commit/push when requested. See
+**Workflow:** edit and validate in `E:\web\repos\admin-new` → deploy only to an
+explicitly documented target → verify hashes and remote IIS behavior →
+commit/push when requested. The existing `GLOBAL_6-next/admin` legacy tree
+remains read-only. See
 [`source-first-deployment-workflow.md`](source-first-deployment-workflow.md).
 
 Do **not** keep the git working tree on `A:\` (network mapped drive). Git is

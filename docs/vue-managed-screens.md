@@ -1,5 +1,9 @@
 # Zero-Build Vue Managed Screens
 
+> **Deployment transition (July 25, 2026):** WVBPS paths in this guide are
+> examples from the proving deployment. Apply the same pattern under the future
+> global managed-admin root once it is selected.
+
 This guide is for company developers who know browser JavaScript and are new to
 Vue. It documents the managed-screen pattern currently used by Code Admin and
 the shared `InlineEdit` component. The shell remains framework-neutral: its

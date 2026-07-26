@@ -1,18 +1,48 @@
 # Managed admin shell — platform reference
 
-Last updated: July 17, 2026
+Last updated: July 25, 2026
 
-**What this is:** A client-neutral replacement for the legacy global admin **chrome and login** — HTML5 shell, VB.NET handlers, unified Access Manager SPA, and a bidirectional session bridge to unmigrated Classic ASP / Perl tools. It is **not** tied to any one client; we happen to be dogfooding on a dev site for convenience.
+**What this is:** A client-neutral replacement for the legacy global admin
+**chrome, login, and tools** — HTML5 shell, VB.NET handlers, managed
+applications, and a temporary bridge to unmigrated Classic ASP / Perl tools.
 
-**Start here** for how legacy global admin and the managed admin shell pilot fit together.
+**Start here** for how legacy global admin and the managed admin shell fit together.
 Task detail: [`agent-handoff.md`](agent-handoff.md). Git: [`github-repo.md`](github-repo.md).
 Legacy cookies: [`legacy-credential-encoder.md`](legacy-credential-encoder.md).
 
 ---
 
-## Two shells, one client site
+## Current direction
 
-Every client runs the same **global** legacy admin (`/admin/admin/...`). The pilot is an **optional, relocatable** tree (configured via `PilotRootPath`) that shares ACLs and Ajax with legacy but uses its own login and chrome.
+The WVBPS deployment was the proving environment. The project is no longer an
+unlinked stealth pilot: further work is moving to a global managed-admin folder
+so one maintained implementation can replace global Classic ASP and Perl tools.
+The exact global physical and URL roots are still to be selected and documented.
+
+Until then:
+
+- this repository is the source of truth;
+- WVBPS paths below are historical/example deployment values;
+- the existing `GLOBAL_6-next/admin` tree remains read-only;
+- do not copy client-specific host, DSN, organization, banner, or secret values
+  into the global implementation;
+- preserve external contracts by default while replacing implementations in
+  .NET;
+- add no new Perl, and rebuild substantial Classic ASP changes in .NET.
+
+Migration guidance:
+
+- [`classic-asp-migration-guide.md`](classic-asp-migration-guide.md)
+- [`perl-eradication-plan.md`](perl-eradication-plan.md)
+- [`security-quality-review-2026-07.md`](security-quality-review-2026-07.md)
+
+## Legacy and managed shells during transition
+
+Every client currently reaches the **global** legacy admin
+(`/admin/admin/...`). The managed tree is relocatable through `PilotRootPath`
+and currently shares selected ACLs and integrations with legacy while using its
+own login and chrome. `Pilot*` identifiers are now historical compatibility
+names, not a statement that the product remains in stealth.
 
 | | **Legacy global admin** | **Managed admin shell (pilot)** |
 |---|-------------------------|----------------------------------|
@@ -23,7 +53,10 @@ Every client runs the same **global** legacy admin (`/admin/admin/...`). The pil
 | **Chrome** | Global `topshell.asp` | `PilotShell.vb` unified header + left nav |
 | **Global source (read-only)** | `GLOBAL_6-next/admin` | This repo (`admin-new`) → sync to client IIS paths |
 
-The pilot is **unlinked** from the production menu until deliberately promoted. Tool **business logic** stays in copied ASP; migration changes are shell includes, routes, and ACL wiring only.
+The original WVBPS rollout was unlinked from the production menu. That is no
+longer the product strategy. Compatibility-onboarded ASP tools may keep business
+logic unchanged temporarily; any substantial change and every required Perl
+capability moves to .NET under the migration guides above.
 
 ---
 
@@ -144,9 +177,10 @@ All clients share the **same codebase**; hosts, routes, banners, Redis, and encr
 
 ---
 
-## Example: current dev dogfood site
+## Historical proving deployment: WVBPS dev
 
-> **One client, temporary convenience** — not the product name. Any of ~60 clients could host the same tree with different `web.config`.
+> WVBPS proved the current implementation. It is no longer the target location
+> for further platform development.
 
 | Item | Example (WVBPS dev) |
 |------|---------------------|
@@ -180,5 +214,9 @@ When docs or handoff mention these paths, read them as **this deployment's value
 |-----|----------|
 | [`agent-handoff.md`](agent-handoff.md) | Boundaries, checklists, rollback |
 | [`managed-admin-shell-plan.md`](managed-admin-shell-plan.md) | Original plan and waves |
+| [`security-quality-review-2026-07.md`](security-quality-review-2026-07.md) | Security, correctness, performance, and quality findings |
+| [`legacy-auth-bridge-hardening-plan.md`](legacy-auth-bridge-hardening-plan.md) | Fixing inbound trust in the cookie bridge |
 | [`legacy-credential-encoder.md`](legacy-credential-encoder.md) | Cookie encoding |
+| [`classic-asp-migration-guide.md`](classic-asp-migration-guide.md) | ASP compatibility onboarding and .NET rebuilds |
+| [`perl-eradication-plan.md`](perl-eradication-plan.md) | Perl contract parity, correction gates, cutover, and deletion |
 | [`github-repo.md`](github-repo.md) | Clone, push, secrets |

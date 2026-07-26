@@ -1,5 +1,10 @@
 # Code Admin architecture
 
+> **Deployment transition (July 25, 2026):** WVBPS paths below document the
+> proving deployment. Future development is moving to a global managed-admin
+> location whose root is still TBD. Preserve the architecture and verification
+> guidance, but do not treat WVBPS paths as the new target.
+
 Code Admin is a Vue single-page application backed by narrow VB.NET JSON APIs.
 It replaces the legacy Oracle-backed `cgi-bin/codeadminO.pl` and
 `cgi-bin/codeadmin.pl` workflows while preserving their canonical access rules,
@@ -203,7 +208,7 @@ Repository source of truth:
 E:\web\repos\admin-new
 ```
 
-WVBPS development deployment:
+Historical/current WVBPS proving deployment:
 
 | Source | Destination |
 | --- | --- |

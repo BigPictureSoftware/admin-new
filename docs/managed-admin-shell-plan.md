@@ -1,6 +1,14 @@
 # Managed Admin Shell Plan
 
-Last updated: July 17, 2026
+Last updated: July 25, 2026
+
+> **Historical implementation plan.** This records the WVBPS proving rollout.
+> The project is no longer an unlinked stealth pilot and is transitioning to a
+> global managed-admin location. For current migration direction, use
+> [`admin-shell-platform.md`](admin-shell-platform.md),
+> [`classic-asp-migration-guide.md`](classic-asp-migration-guide.md), and
+> [`perl-eradication-plan.md`](perl-eradication-plan.md). Paths and constraints
+> below remain useful as deployment history; they are not the future target.
 
 The operational continuation notes are in
 [`agent-handoff.md`](agent-handoff.md). A new agent should read that file before
@@ -83,7 +91,7 @@ Still required:
   - `/dev/adminshell/loginlog.asp` -> `/admin/admin/loginlog.asp`
   - `/dev/adminshell/sql_logs.asp` -> `/admin/admin/sql_logs.asp`
   - `/dev/adminshell/sms_logs.asp` -> `/admin/admin/sms_logs.asp`
-  - `/dev/adminshell/managed/access-manager/index.html` -> `/admin/admin/cgi-bin/accessadmin.pl`
+  - `/dev/adminshell/managed/access-manager/index.aspx` -> `/admin/admin/cgi-bin/accessadmin.pl`
 - `PilotDefaultRoute` remains `/dev/adminshell/views.asp` so the HTML5 login
   still lands on Views when no safe return URL is supplied.
 - Unknown `/dev/adminshell/...` routes are denied by the authorize/chrome
@@ -262,7 +270,7 @@ Access Manager ACL smoke test:
 
 ## Access Manager API
 
-Document-relative endpoints from `managed/access-manager/index.html`:
+Document-relative endpoints from `managed/access-manager/index.aspx`:
 
 | Endpoint | Methods | Purpose |
 |----------|---------|---------|

@@ -74,6 +74,13 @@ cannot read them directly. `topshell.asp` redirects through `pilot-bridge.asp`
 `PilotAuth.TryGetCurrentUser` also accepts legacy cookies when they are present
 on the request (e.g. `pilot-establish.ashx` and direct managed API calls).
 
+> **Security note.** That inbound acceptance treats the `username` ciphertext as
+> a bearer credential: no password, no Redis check, no MAC, and no server-side
+> state to revoke. Cookie `Path=/admin` does not restrict it, because the handler
+> reads the cookie from any URL. See
+> [`legacy-auth-bridge-hardening-plan.md`](legacy-auth-bridge-hardening-plan.md)
+> before relying on or extending this direction of the bridge.
+
 ## Tests
 
 - `managed/App_Data/tests/PerlCryptCbcBlowfishTests.vb` — padding, KDF, round-trip

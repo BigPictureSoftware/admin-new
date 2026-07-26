@@ -1,5 +1,12 @@
 # Source-first development and deployment
 
+> **Deployment transition (July 25, 2026):** WVBPS `A:` paths in this document
+> describe the proving deployment. Further work is moving to a global
+> managed-admin location whose physical/URL root is still TBD. Keep the local
+> Git workflow, manifest, backup, hash, browser, and rollback principles; replace
+> WVBPS paths only after the new target is explicitly documented. The existing
+> global legacy tree remains read-only.
+
 This document defines how changes move from the local Git repository to a
 mapped IIS deployment. The goal is to test the exact source that will be
 committed while minimizing partial deployments and application-wide failures.
@@ -14,9 +21,10 @@ compile tests, see
 | Location | Role |
 | --- | --- |
 | `E:\web\repos\admin-new` | Git source of truth, editing, diffs, tests, compilation, commits, and pushes. |
-| `A:\wvbps\www\html\dev\adminshell` | WVBPS development deployment for browser assets and managed endpoints. |
-| `A:\wvbps\www\html\App_Code\AdminShell` | WVBPS development deployment for dynamically compiled server source. |
+| `A:\wvbps\www\html\dev\adminshell` | Historical/current WVBPS proving deployment for browser assets and managed endpoints. |
+| `A:\wvbps\www\html\App_Code\AdminShell` | Historical/current WVBPS proving deployment for dynamically compiled server source. |
 | `A:\GLOBAL_6-next\admin` | Read-only legacy reference. Do not edit. |
+| `{GlobalManagedAdminPhysicalRoot}` | Future managed target; select and document before use. |
 
 The `A:` paths are one client deployment. Other clients can map the same
 repository to different physical and URL roots.

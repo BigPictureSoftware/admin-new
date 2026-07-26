@@ -1,6 +1,11 @@
 # Shell Unification Plan
 
-Last updated: July 17, 2026
+Last updated: July 25, 2026
+
+> **Historical/completed WVBPS wave.** The unified shell remains the reference
+> implementation, but future work moves to the global managed-admin location.
+> Use [`classic-asp-migration-guide.md`](classic-asp-migration-guide.md) for new
+> ASP onboarding/rebuild decisions.
 
 Read with [`agent-handoff.md`](agent-handoff.md) and
 [`managed-admin-shell-plan.md`](managed-admin-shell-plan.md).
@@ -11,7 +16,7 @@ The pilot currently has **two shells**:
 
 | Shell | Used by | Left nav | Top tabs | Chrome source |
 |-------|---------|----------|----------|---------------|
-| **New** | Access Manager SPA | ACL-filtered section accordion (`shell.js`) | JS `renderNav` from session | `managed/access-manager/index.html` + `managed/shared/shell.{css,js}` |
+| **New** | Access Manager SPA | ACL-filtered section accordion (`shell.js`) | JS `renderNav` from session | `managed/access-manager/index.aspx` + `managed/shared/shell.{css,js}` |
 | **Legacy** | `views.asp`, `loginlog.asp`, `sql_logs.asp`, `sms_logs.asp` | Stub “Configuration” link only | Server-rendered `PilotRoutes` tabs | `topshell.asp` → `chrome.ashx` → `PilotShell.vb` |
 
 Access Manager already shows the desired UX: modern header, pilot tool tabs, and

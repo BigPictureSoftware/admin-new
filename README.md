@@ -1,8 +1,18 @@
-# Admin Shell Pilot (`admin-new`)
+# Managed Admin Shell (`admin-new`)
 
-Client-neutral managed admin shell: HTML5 login, unified chrome, Access Manager SPA, and a session bridge to legacy `/admin/admin` tools. **Any client** can host it via `PilotRootPath` and `managed/web.config`; we are currently dogfooding on one dev site for convenience.
+Client-neutral managed admin platform: HTML5 login, unified chrome, VB.NET APIs,
+Access Manager, Code Admin, compatibility-hosted Classic ASP tools, and a
+temporary session bridge to legacy `/admin/admin` tools.
 
-Files under `A:\GLOBAL_6-next\admin` are read-only global source — do not edit.
+The WVBPS pilot proved the platform. The project is no longer in stealth mode;
+further work is moving to a global managed-admin folder so Classic ASP and Perl
+admin tools can be replaced for every client. The exact global URL/physical
+root is still to be selected. Existing `Pilot*` code/config names remain for
+compatibility until a deliberate rename.
+
+Files under the existing `GLOBAL_6-next\admin` legacy tree remain read-only.
+Do not infer a deployment target from the phrase "global admin"; select and
+document the new managed location first.
 
 See [`docs/managed-admin-shell-plan.md`](docs/managed-admin-shell-plan.md) for
 the current implementation status, IIS setup, verification, and later waves.
@@ -13,16 +23,34 @@ boundaries, and the tool-migration checklist.
 Plans and status:
 
 - [`docs/admin-shell-platform.md`](docs/admin-shell-platform.md) — **central overview** (legacy vs pilot, auth bridge, relocatable config).
-- [`docs/shell-unification-plan.md`](docs/shell-unification-plan.md) — unify
-  Access Manager and Classic ASP chrome (next wave).
+- [`docs/security-quality-review-2026-07.md`](docs/security-quality-review-2026-07.md) — full security, correctness, performance, and quality review.
+- [`docs/legacy-auth-bridge-hardening-plan.md`](docs/legacy-auth-bridge-hardening-plan.md) — remove the legacy cookie impersonation/session trust weakness.
+- [`docs/classic-asp-migration-guide.md`](docs/classic-asp-migration-guide.md) — compatibility onboarding versus .NET rebuild rules for `.asp` tools.
+- [`docs/perl-eradication-plan.md`](docs/perl-eradication-plan.md) — contract-preserving Perl rewrites, mandatory corrections, cutover, and deletion.
+- [`docs/shell-unification-plan.md`](docs/shell-unification-plan.md) — historical
+  completed WVBPS shell-unification wave.
 - [`docs/github-repo.md`](docs/github-repo.md) — GitHub repo layout and deploy notes.
 - [`docs/source-first-deployment-workflow.md`](docs/source-first-deployment-workflow.md) — source-first validation, deployment, rollback, and commit workflow.
 - [`docs/aspnet-web-site-vb48-workflow.md`](docs/aspnet-web-site-vb48-workflow.md) — reusable staff guide for source-deployed ASP.NET Web Sites using VB.NET and .NET Framework 4.8.
 - [`AGENTS.md`](AGENTS.md) — short index for coding agents.
 
-## IIS layout (example deployment)
+## Direction and engineering rule
 
-Values below are **one client's dev setup** (see `managed/web.config`). Other clients change `PilotRootPath`, host, and sync paths.
+- Preserve form, API, database, authorization, and side-effect contracts by
+  default when replacing legacy code.
+- Do not copy known security or integrity defects merely for parity.
+- Add no new Perl.
+- If a Classic ASP capability must be touched substantially, rebuild it in .NET.
+- If ASP calls Perl for business functionality, implement that capability once
+  in .NET; use a temporary ASP-compatible endpoint only until the caller is
+  rebuilt.
+- Remove old implementations after a bounded rollback period. A permanent
+  fallback is not a completed migration.
+
+## IIS layout (historical WVBPS proving deployment)
+
+Values below document the proving deployment and current source assumptions.
+They are not the future global target.
 
 - Pilot tree lives under the client's front-end IIS app (example: `/dev/adminshell`).
 - Managed endpoints inherit the parent .NET Framework 4.8 configuration.
@@ -43,12 +71,12 @@ Copied pilot tools:
 | `/dev/adminshell/loginlog.asp` | `/admin/admin/loginlog.asp` |
 | `/dev/adminshell/sql_logs.asp` | `/admin/admin/sql_logs.asp` |
 | `/dev/adminshell/sms_logs.asp` | `/admin/admin/sms_logs.asp` |
-| `/dev/adminshell/managed/access-manager/index.html` | `/admin/admin/cgi-bin/accessadmin.pl` |
+| `/dev/adminshell/managed/access-manager/index.aspx` | `/admin/admin/cgi-bin/accessadmin.pl` |
 | `/dev/adminshell/managed/code-admin/index.aspx` | `/admin/admin/cgi-bin/codeadminO.pl` |
 
 Access Manager SPA:
 
-`https://dev.services.wvbps.wv.gov/dev/adminshell/managed/access-manager/index.html`
+`https://dev.services.wvbps.wv.gov/dev/adminshell/managed/access-manager/index.aspx`
 
 Code Admin (.NET rewrite of `codeadminO.pl`):
 
@@ -61,8 +89,9 @@ is available from the section, and modal lookups replace raw script/principal
 IDs. Principal-centric access search is launched from the same workspace.
 The shell also renders the user's access-filtered sections and scripts in a
 searchable, collapsible left menu following the legacy navigation hierarchy.
-Perl admin tools remain
-available at their canonical `/admin/admin/cgi-bin/...` paths as rollback.
+Perl admin tools currently remain at their canonical
+`/admin/admin/cgi-bin/...` paths as rollback. The program goal is to remove all
+of them; see the eradication plan.
 
 Its seven production server files are under `App_Code/AdminShell/AccessManager/`:
 `AccessManagerContracts.vb`, `AccessManagerSecurity.vb`,
@@ -74,7 +103,7 @@ Route mappings, nav labels, and the default post-login route are configured in
 `managed/web.config` (`PilotRoutes`, `PilotDefaultRoute`). Unknown routes are
 denied. The HTML5 login still defaults to Views.
 
-## Isolation
+## Historical pilot isolation
 
 - The managed login uses the separate `bp_admin_next` cookie.
 - The cookie contains no password and does not satisfy legacy Perl auth.
@@ -84,7 +113,8 @@ denied. The HTML5 login still defaults to Views.
 - Each copied route is authorized against its own canonical
   `/admin/admin/...` ACL identity from `PilotRoutes`.
 - Pilot shell navigation is generated from the same route configuration.
-- No existing menu or login route points to this pilot.
+- The original WVBPS rollout was not linked from the existing menu. That stealth
+  constraint is retired for future global development.
 
 ## Verification
 

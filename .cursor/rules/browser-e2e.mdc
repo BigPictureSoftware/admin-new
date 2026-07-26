@@ -44,4 +44,4 @@ fetch('api/workspace.ashx').then(async r => ({
 
 - Login: `https://dev.services.wvbps.wv.gov/dev/adminshell/managed/login.html`
 - Code Admin: `.../managed/code-admin/index.aspx`
-- Access Manager: `.../managed/access-manager/index.html`
+- Access Manager: `.../managed/access-manager/index.aspx`
